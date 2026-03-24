@@ -434,7 +434,31 @@ class RecordedComponent extends ParentComponent<void> {
                 }
             },
         }, [
-            m('td', { class: RecordedComponent.nonNumeric + ' title' }, recorded.name),
+            m('td', {
+                class: RecordedComponent.nonNumeric + ' title',
+            }, [
+                m('div', { style: 'float: right; display: flex;' }, [
+                    this.infoViewModel.getVideoSrc(false, recorded).map((video) => {
+                        return m('a', {
+                            class: 'recorded-link mdl-button mdl-button--raised mdl-button--colored ripple',
+                            style: 'margin-left: 8px; height: 24px; line-height: 24px; min-width: 40px; padding: 0 8px; text-transform: none; font-size: 11px;',
+                            onclick: (e: Event) => {
+                                e.stopPropagation();
+                                this.infoViewModel.set(recorded);
+                                this.balloon.open(RecordedInfoViewModel.id, e);
+                            },
+                        }, video.name);
+                    }),
+                    this.infoViewModel.getEncoding(recorded).map((video) => {
+                        return m('a', {
+                            class: 'recorded-link mdl-button mdl-button--raised mdl-button--colored ripple',
+                            style: 'margin-left: 8px; height: 24px; line-height: 24px; min-width: 40px; padding: 0 8px; text-transform: none; font-size: 11px;',
+                            disabled: ' ',
+                        }, video.name);
+                    }),
+                ]),
+                m('span', recorded.name),
+            ]),
             m('td', { class: RecordedComponent.nonNumeric + ' channel' }, this.viewModel.getChannelName(recorded.channelId)),
             m('td', { class: RecordedComponent.nonNumeric + ' time' }, this.viewModel.getTimeStr(recorded, true)),
             m('td', { class: RecordedComponent.nonNumeric + ' menu' }, [

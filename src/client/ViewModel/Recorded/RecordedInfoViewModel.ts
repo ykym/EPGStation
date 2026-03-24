@@ -129,12 +129,14 @@ class RecordedInfoViewModel extends ViewModel {
     /**
      * get video source
      * @param download: true: download mode, false: not download mode
+     * @param recorded: RecordedProgram | null (optional)
      * @return video source
      */
-    public getVideoSrc(download: boolean = false): VideoSrcInfo[] {
+    public getVideoSrc(download: boolean = false, recorded: apid.RecordedProgram | null = null): VideoSrcInfo[] {
         const config = this.config.getConfig();
         const setting = this.setting.getValue();
-        if (this.recorded === null || config === null) { return []; }
+        const r = recorded === null ? this.recorded : recorded;
+        if (r === null || config === null) { return []; }
 
         // url scheme 用のベースリンクを取得
         let urlScheme: string | null = null;
@@ -169,33 +171,33 @@ class RecordedInfoViewModel extends ViewModel {
 
         const result: VideoSrcInfo[] = [];
         // ts ファイル
-        if (this.recorded.original) {
+        if (r.original) {
             let url = Util.getSubDirectory();
-            url += download ? `/api/recorded/${ this.recorded.id }/file?mode=download`
-                : urlScheme === null ? `/api/recorded/${ this.recorded.id }/playlist` : `/api/recorded/${ this.recorded.id }/file`;
+            url += download ? `/api/recorded/${ r.id }/file?mode=download`
+                : urlScheme === null ? `/api/recorded/${ r.id }/playlist` : `/api/recorded/${ r.id }/file`;
             if (urlScheme !== null) {
                 let full = location.host + url;
                 if (urlScheme.match(/vlc-x-callback/)) { full = encodeURIComponent(full); }
                 url = urlScheme.replace(/ADDRESS/g, full);
-                if (typeof this.recorded.filename !== 'undefined') {
-                    url = url.replace(/FILENAME/g, this.recorded.filename);
+                if (typeof r.filename !== 'undefined') {
+                    url = url.replace(/FILENAME/g, r.filename);
                 }
             }
             result.push({
                 name: 'TS',
                 path: url,
-                filesize: this.createFileSizeStr(this.recorded.filesize),
+                filesize: this.createFileSizeStr(r.filesize),
                 isUrlScheme: urlScheme !== null,
                 useWebPlayer: false,
             });
         }
 
         // エンコード済みファイル
-        if (typeof this.recorded.encoded !== 'undefined') {
-            for (const encoded of this.recorded.encoded) {
+        if (typeof r.encoded !== 'undefined') {
+            for (const encoded of r.encoded) {
                 let url = Util.getSubDirectory();
-                url += download ? `/api/recorded/${ this.recorded.id }/file?encodedId=${ encoded.encodedId }&mode=download`
-                        : `/api/recorded/${ this.recorded.id }/file?encodedId=${ encoded.encodedId }`;
+                url += download ? `/api/recorded/${ r.id }/file?encodedId=${ encoded.encodedId }&mode=download`
+                        : `/api/recorded/${ r.id }/file?encodedId=${ encoded.encodedId }`;
                 if (urlScheme !== null && !setting.prioritizeWebPlayerOverURLScheme) {
                     let full = location.host + url;
                     if (urlScheme.match(/vlc-x-callback/)) { full = encodeURIComponent(full); }
@@ -227,9 +229,12 @@ class RecordedInfoViewModel extends ViewModel {
 
     /**
      * エンコード待機、エンコード中の情報を取得
+     * @param recorded: RecordedProgram | null (optional)
      */
-    public getEncoding(): { name: string; isEncoding: boolean }[] {
-        return this.recorded === null || typeof this.recorded.encoding === 'undefined' ? [] : this.recorded.encoding;
+    public getEncoding(recorded: apid.RecordedProgram | null = null): { name: string; isEncoding: boolean }[] {
+        const r = recorded === null ? this.recorded : recorded;
+
+        return r === null || typeof r.encoding === 'undefined' ? [] : r.encoding;
     }
 
     /**

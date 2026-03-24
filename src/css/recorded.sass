@@ -141,6 +141,30 @@ $grid-max: 20
             .title
                 max-width: 600px
 
+                .recorded-link
+                    margin: 4px 0 4px 8px
+                    text-transform: none
+                    font-size: 11px
+                    height: 24px
+                    line-height: 24px
+                    min-width: 40px
+                    padding: 0 8px
+                    color: white
+                    background-color: #3f51b5
+                    border-radius: 2px
+                    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12)
+                    text-decoration: none
+                    text-align: center
+                    vertical-align: middle
+                    cursor: pointer
+                    display: inline-block
+
+                    &[disabled]
+                        background-color: rgba(0,0,0,.12)
+                        color: rgba(0,0,0,.26)
+                        cursor: default
+                        box-shadow: none
+
             .channel, .time
                 max-width: 120px
                 min-width: 120px
